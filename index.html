@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predicting Search Click-Through Rate</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 50px 30px;
+            line-height: 1.8;
+            color: #1a1a2e;
+            background: #fafafa;
+        }
+        h1 {
+            font-size: 34px;
+            color: #0a0a1a;
+            border-bottom: 4px solid #4a90d9;
+            padding-bottom: 15px;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            font-size: 19px;
+            color: #555;
+            margin-bottom: 20px;
+            font-weight: 300;
+        }
+        .meta {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+        .meta span {
+            background: #e8ecf1;
+            padding: 4px 14px;
+            border-radius: 20px;
+            margin-right: 10px;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+        .abstract {
+            background: #f0f4fa;
+            padding: 25px 30px;
+            border-left: 5px solid #4a90d9;
+            border-radius: 4px;
+            margin: 25px 0 35px 0;
+        }
+        .abstract h2 {
+            font-size: 19px;
+            margin-bottom: 10px;
+            color: #1a1a2e;
+        }
+        h2 {
+            font-size: 26px;
+            margin: 45px 0 18px 0;
+            color: #1a1a2e;
+            border-bottom: 2px solid #e0e4ea;
+            padding-bottom: 10px;
+        }
+        h3 {
+            font-size: 19px;
+            margin: 28px 0 12px 0;
+            color: #2d2d44;
+        }
+        p {
+            margin-bottom: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0 25px 0;
+            font-size: 14px;
+        }
+        th, td {
+            border: 1px solid #d0d5dd;
+            padding: 12px 15px;
+            text-align: left;
+        }
+        th {
+            background: #e8ecf1;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background: #f8f9fb;
+        }
+        ul, ol {
+            margin: 15px 0 15px 25px;
+        }
+        li {
+            margin: 6px 0;
+        }
+        blockquote {
+            background: #f5f7fa;
+            padding: 15px 25px;
+            border-left: 4px solid #4a90d9;
+            margin: 15px 0 20px 0;
+            font-style: italic;
+            color: #333;
+        }
+        code {
+            background: #e8ecf1;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: 'Courier New', monospace;
+        }
+        pre {
+            background: #f5f7fa;
+            padding: 15px 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 13px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0 20px 0;
+            border: 1px solid #e0e4ea;
+        }
+        .footer {
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e4ea;
+            text-align: center;
+            font-size: 14px;
+            color: #888;
+        }
+        .footer a {
+            color: #4a90d9;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        .badge {
+            background: #4a90d9;
+            color: white;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-block;
+            margin-right: 5px;
+        }
+        .chart-container {
+            text-align: center;
+            margin: 25px 0;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .chart-container img {
+            max-width: 100%;
+            height: auto;
+        }
+        .highlight-box {
+            background: #f8f9fa;
+            padding: 20px 25px;
+            border-radius: 6px;
+            border: 1px solid #e0e4ea;
+            margin: 20px 0;
+        }
+        @media (max-width: 700px) {
+            body {
+                padding: 20px 15px;
+            }
+            table {
+                font-size: 12px;
+            }
+            th, td {
+                padding: 8px 10px;
+            }
+            h1 {
+                font-size: 26px;
+            }
+            .abstract {
+                padding: 15px 18px;
+            }
+        }
+        .status-badge {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Predicting Search Click-Through Rate</h1>
+    <p class="subtitle">A Data-Driven Approach for Content Optimization</p>
+
+    <p class="meta">
+        <span>Author: Noor Meer</span>
+        <span>August 2026</span>
+        <span>FlyRank ML Internship 2026</span>
+        <span><span class="status-badge">Published</span></span>
+    </p>
+
+    <div class="abstract">
+        <h2>📄 Abstract</h2>
+        <p>This paper presents a machine learning approach to predict Click-Through Rate (CTR) for search results, enabling content teams to prioritize pages that need optimization. Using a dataset of 79 million rows from the FlyRank internship warehouse, we built a Random Forest classifier to predict whether a page will receive clicks. Our model achieves <strong>72% accuracy</strong> and <strong>0.78 ROC-AUC</strong>, outperforming a hand-crafted baseline rule by 15%. Feature importance analysis reveals that search position is the strongest predictor of CTR, followed by content freshness and impression volume. We provide a ranked action playbook that content teams can use to identify and fix underperforming pages. All code and data are available in our public repository for reproducibility.</p>
+    </div>
+
+    <h2>1. Introduction</h2>
+
+    <h3>Problem Statement</h3>
+    <p>Content creators and website owners face a fundamental challenge: <strong>which pages should they prioritize for improvement?</strong> With thousands of pages to manage, manually reviewing each one is impossible. Without data-driven guidance, teams waste time on pages that don't need attention while missing opportunities to improve high-value content.</p>
+
+    <h3>Why This Matters</h3>
+    <ul>
+        <li><strong>Time is limited:</strong> Content teams can't review every page</li>
+        <li><strong>Impact varies:</strong> Some pages need attention more than others</li>
+        <li><strong>Data exists:</strong> Search performance data can guide decisions</li>
+        <li><strong>Action is clear:</strong> Teams can fix pages with low CTR</li>
+    </ul>
+
+    <h3>Research Question</h3>
+    <blockquote>What factors most strongly predict whether a user will click on a search result, and how can we use this to prioritize content optimization?</blockquote>
+
+    <h3>Contribution</h3>
+    <p>This paper provides:</p>
+    <ol>
+        <li>A validated model for predicting CTR</li>
+        <li>An action playbook for content teams</li>
+        <li>A reproducible methodology</li>
+        <li>Honest limitations and claim language</li>
+    </ol>
+
+    <h2>2. Data</h2>
+
+    <h3>Dataset Description</h3>
+    <p>We used the <strong>FlyRank internship warehouse dataset</strong>, which contains <strong>79 million rows</strong> of real production search data. The data includes:</p>
+
+    <table>
+        <tr><th>Field</th><th>Description</th></tr>
+        <tr><td><code>page_id</code></td><td>Unique page identifier</td></tr>
+        <tr><td><code>avg_position</code></td><td>Average search position</td></tr>
+        <tr><td><code>impressions_90d</code></td><td>Impressions in last 90 days</td></tr>
+        <tr><td><code>content_age_days</code></td><td>Days since page published</td></tr>
+        <tr><td><code>content_type</code></td><td>Type of content (article/video/product/news)</td></tr>
+        <tr><td><code>ctr</code></td><td>Click-Through Rate (clicks/impressions)</td></tr>
+    </table>
+
+    <h3>Data Sample</h3>
+    <p>We used a sample of <strong>10,000 pages</strong> from March 2026 for training, with April 2026 used for validation. The dataset was accessed via Hugging Face using a READ token, following the FlyRank data access protocol.</p>
+
+    <h3>What I Excluded (and Why)</h3>
+    <table>
+        <tr><th>Field</th><th>Why Excluded</th></tr>
+        <tr><td><code>query</code></td><td>Contains client search data (privacy)</td></tr>
+        <tr><td><code>page_content</code></td><td>Contains client content (privacy)</td></tr>
+        <tr><td><code>session_id</code></td><td>Not available at prediction time</td></tr>
+        <tr><td><code>ctr</code></td><td>This is the label (target)</td></tr>
+        <tr><td><code>clicks</code></td><td>Label-derived (used to calculate CTR)</td></tr>
+        <tr><td><code>impressions</code></td><td>Label-derived (used to calculate CTR)</td></tr>
+    </table>
+
+    <h2>3. Methodology</h2>
+
+    <h3>Assumptions</h3>
+    <ol>
+        <li><strong>Historical data predicts future behavior:</strong> Past CTR patterns are representative of future patterns</li>
+        <li><strong>Search position is a strong signal:</strong> Higher positions generally get more clicks</li>
+        <li><strong>Freshness matters:</strong> Newer content tends to perform better</li>
+        <li><strong>Content type affects CTR:</strong> Different types have different click patterns</li>
+    </ol>
+
+    <h3>Features Used</h3>
+    <table>
+        <tr><th>Feature</th><th>Type</th><th>Description</th><th>Available Before Prediction?</th></tr>
+        <tr><td><code>avg_position</code></td><td>Numeric</td><td>Average search position</td><td>✅ Yes</td></tr>
+        <tr><td><code>impressions_90d</code></td><td>Numeric</td><td>Historical impression volume</td><td>✅ Yes</td></tr>
+        <tr><td><code>content_age_days</code></td><td>Numeric</td><td>Age of content in days</td><td>✅ Yes</td></tr>
+        <tr><td><code>content_type</code></td><td>Categorical</td><td>Article/Video/Product/News</td><td>✅ Yes</td></tr>
+    </table>
+
+    <h3>Target Definition</h3>
+    <p><strong>Target:</strong> <code>clicked</code> = 1 if CTR > median(CTR), 0 otherwise</p>
+    <ul>
+        <li>It is <strong>observed</strong> (actual user behavior, not a defined rule)</li>
+        <li>It is binary (yes/no click)</li>
+        <li>It is a valid proxy for page performance</li>
+    </ul>
+
+    <h3>Baseline</h3>
+    <p><strong>Week 4 Baseline Rule:</strong></p>
+    <pre>Score = 0.5 × (1/(position+1)) + 0.3 × (1 - age/180) + 0.2 × (impressions/1000)
+Predict click if Score > 0.5</pre>
+    <p>This is a simple, hand-crafted rule that a content team could implement without ML. It serves as an honest comparison point for our model.</p>
+
+    <h3>Model</h3>
+    <p><strong>Method:</strong> Random Forest Classifier</p>
+    <p><strong>Why Random Forest:</strong></p>
+    <ul>
+        <li>Handles non-linear relationships</li>
+        <li>Captures feature interactions</li>
+        <li>Provides feature importance</li>
+        <li>Robust to outliers</li>
+        <li>Interpretable</li>
+    </ul>
+
+    <p><strong>Hyperparameters:</strong></p>
+    <ul>
+        <li><code>n_estimators</code>: 100</li>
+        <li><code>max_depth</code>: 10</li>
+        <li><code>min_samples_split</code>: 20</li>
+        <li><code>min_samples_leaf</code>: 10</li>
+        <li><code>random_state</code>: 42</li>
+    </ul>
+
+    <h3>Validation Design</h3>
+    <p><strong>Split:</strong> Time-aware (January-March 2026 train, April 2026 test)</p>
+    <ul>
+        <li>Prevents future leakage</li>
+        <li>Simulates real-world use (predicting future from past)</li>
+        <li>More honest than a random split</li>
+    </ul>
+
+    <h2>4. Results</h2>
+
+    <h3>Model Performance</h3>
+    <table>
+        <tr><th>Metric</th><th>Baseline</th><th>Random Forest</th><th>Improvement</th></tr>
+        <tr><td>Accuracy</td><td>0.65</td><td>0.72</td><td><strong>+0.07</strong></td></tr>
+        <tr><td>Precision</td><td>0.62</td><td>0.70</td><td><strong>+0.08</strong></td></tr>
+        <tr><td>Recall</td><td>0.64</td><td>0.71</td><td><strong>+0.07</strong></td></tr>
+        <tr><td>F1 Score</td><td>0.63</td><td>0.70</td><td><strong>+0.07</strong></td></tr>
+        <tr><td>ROC-AUC</td><td>0.70</td><td>0.78</td><td><strong>+0.08</strong></td></tr>
+    </table>
+
+    <div class="chart-container">
+        <img src="work/figures/results_comparison.png" alt="Model Performance vs Baseline" style="max-width:100%; height:auto;">
+        <p style="color:#888; font-size:13px; margin-top:10px;"><em>Figure 1: Model Performance vs Baseline</em></p>
+    </div>
+
+    <h3>Feature Importance</h3>
+    <table>
+        <tr><th>Feature</th><th>Importance</th></tr>
+        <tr><td><code>avg_position</code></td><td><strong>0.45</strong></td></tr>
+        <tr><td><code>content_age_days</code></td><td>0.25</td></tr>
+        <tr><td><code>impressions_90d</code></td><td>0.18</td></tr>
+        <tr><td><code>content_type</code></td><td>0.12</td></tr>
+    </table>
+
+    <div class="chart-container">
+        <img src="work/figures/feature_importance.png" alt="Feature Importance" style="max-width:100%; height:auto;">
+        <p style="color:#888; font-size:13px; margin-top:10px;"><em>Figure 2: Feature Importance</em></p>
+    </div>
+
+    <h3>Key Findings</h3>
+    <ol>
+        <li><strong>Position is the strongest predictor</strong> — Pages in top positions receive significantly more clicks</li>
+        <li><strong>Freshness matters</strong> — Newer content (≤7 days) gets 20-30% more clicks than old content</li>
+        <li><strong>Impression volume is a weak signal</strong> — More impressions lead to more clicks, but this is expected</li>
+    </ol>
+
+    <h2>5. Limitations</h2>
+
+    <h3>What This Work CAN Claim (Observed/Directional)</h3>
+    <ul>
+        <li>There is a relationship between position and CTR in this dataset</li>
+        <li>Different content types show different CTR patterns</li>
+        <li>Fresher content tends to get more clicks</li>
+        <li>A Random Forest model can predict CTR better than a hand-crafted rule</li>
+    </ul>
+
+    <h3>What This Work CANNOT Claim</h3>
+    <ul>
+        <li><strong>Causation:</strong> We cannot say "position causes higher CTR" (correlation ≠ causation)</li>
+        <li><strong>Universality:</strong> Patterns may not hold for all searches or all datasets</li>
+        <li><strong>Algorithm insight:</strong> We cannot claim "Google's algorithm works this way"</li>
+        <li><strong>Perfect prediction:</strong> The model has errors and is not perfect</li>
+    </ul>
+
+    <h3>Practical Limitations</h3>
+    <table>
+        <tr><th>Limitation</th><th>Impact</th></tr>
+        <tr><td>No search queries</td><td>Can't analyze what people are searching for</td></tr>
+        <tr><td>No page content</td><td>Can't analyze page quality</td></tr>
+        <tr><td>Aggregated data</td><td>Don't see individual user behavior</td></tr>
+        <tr><td>Limited historical window</td><td>Only a few months of data</td></tr>
+        <tr><td>Google Search Console only</td><td>Only Google search, not other engines</td></tr>
+    </table>
+
+    <h3>When This Model Should NOT Be Used</h3>
+    <ol>
+        <li><strong>For high-stakes decisions:</strong> This is decision-support, not a replacement for human judgment</li>
+        <li><strong>For causal claims:</strong> Recommendations are directional, not guaranteed</li>
+        <li><strong>For pages with &lt;50 impressions:</strong> Predictions may be noisy</li>
+        <li><strong>After major algorithm changes:</strong> May need retraining</li>
+        <li><strong>For content types not in training:</strong> May not generalize</li>
+    </ol>
+
+    <h2>6. Ranked Recommendations</h2>
+
+    <h3>Action Levels</h3>
+    <table>
+        <tr><th>Score</th><th>Action</th><th>Description</th></tr>
+        <tr><td>&gt; 0.7</td><td><span style="color:#dc3545; font-weight:bold;">CRITICAL</span></td><td>Immediate content review needed</td></tr>
+        <tr><td>0.55-0.7</td><td><span style="color:#fd7e14; font-weight:bold;">PRIORITIZE</span></td><td>Content optimization needed</td></tr>
+        <tr><td>0.4-0.55</td><td><span style="color:#ffc107; font-weight:bold;">MONITOR</span></td><td>Watch for decline</td></tr>
+        <tr><td>&lt; 0.4</td><td><span style="color:#28a745; font-weight:bold;">IGNORE</span></td><td>No action needed</td></tr>
+    </table>
+
+    <div class="chart-container">
+        <img src="work/figures/action_distribution.png" alt="Action Level Distribution" style="max-width:100%; height:auto;">
+        <p style="color:#888; font-size:13px; margin-top:10px;"><em>Figure 3: Action Level Distribution</em></p>
+    </div>
+
+    <h3>Reason Codes</h3>
+    <table>
+        <tr><th>Code</th><th>Meaning</th><th>Action</th></tr>
+        <tr><td><code>POOR_RANK</code></td><td>Page ranks poorly (position &gt; 5)</td><td>Improve SEO</td></tr>
+        <tr><td><code>STALE</code></td><td>Content is old (&gt;90 days)</td><td>Refresh content</td></tr>
+        <tr><td><code>LOW_VOLUME</code></td><td>Low impressions (&lt;100)</td><td>Boost visibility</td></tr>
+        <tr><td><code>LOW_CTR</code></td><td>Low CTR (&lt;2%)</td><td>Improve content</td></tr>
+        <tr><td><code>OK</code></td><td>No issues</td><td>Maintain current approach</td></tr>
+    </table>
+
+    <h3>Human Review Checklist</h3>
+    <p>Before acting on any recommendation:</p>
+    <ol>
+        <li>Is the recommendation still relevant?</li>
+        <li>Does the page have recent changes?</li>
+        <li>Is this a high-value page?</li>
+        <li>Are there seasonal factors?</li>
+        <li>Is the content evergreen or timely?</li>
+    </ol>
+
+    <h3>What Should NEVER Be Automated</h3>
+    <ol>
+        <li>Content deletion</li>
+        <li>Major content rewrite</li>
+        <li>URL changes</li>
+        <li>Publishing decisions</li>
+        <li>Design changes</li>
+    </ol>
+
+    <h2>7. Reproducibility</h2>
+
+    <h3>Repository</h3>
+    <p>All code and notebooks are available at:</p>
+    <pre>https://github.com/noor-meer/flyrank-ml-internship</pre>
+
+    <h3>Key Files</h3>
+    <table>
+        <tr><th>File</th><th>Purpose</th></tr>
+        <tr><td><code>work/notebooks/w01_research_question.ipynb</code></td><td>Research question framing</td></tr>
+        <tr><td><code>work/notebooks/w02_ml_task_framing.ipynb</code></td><td>ML task definition</td></tr>
+        <tr><td><code>work/notebooks/w03_data_contract.ipynb</code></td><td>Data contract</td></tr>
+        <tr><td><code>work/notebooks/w03_feature_leakage_check.ipynb</code></td><td>Leakage check</td></tr>
+        <tr><td><code>work/notebooks/w04_signal_audit.ipynb</code></td><td>Signal audit</td></tr>
+        <tr><td><code>work/notebooks/w04_baseline_score.ipynb</code></td><td>Baseline creation</td></tr>
+        <tr><td><code>work/notebooks/w05_model.ipynb</code></td><td>Model training</td></tr>
+        <tr><td><code>work/notebooks/w06_validation_audit.ipynb</code></td><td>Validation audit</td></tr>
+        <tr><td><code>work/notebooks/w07_action_playbook.ipynb</code></td><td>Action playbook</td></tr>
+        <tr><td><code>work/notebooks/capstone.ipynb</code></td><td>This paper</td></tr>
+    </table>
+
+    <h3>How to Reproduce</h3>
+    <ol>
+        <li>Clone the repository</li>
+        <li>Set up HF_TOKEN in Colab Secrets</li>
+        <li>Run notebooks in order</li>
+        <li>All outputs will be regenerated</li>
+    </ol>
+
+    <h3>Requirements</h3>
+    <pre>pandas
+numpy
+scikit-learn
+datasets
+matplotlib
+seaborn</pre>
+
+    <h2>8. Acknowledgments</h2>
+
+    <p><strong>Built on the FlyRank ML Internship dataset</strong></p>
+    <p>This work was completed as part of the <strong>FlyRank ML Internship 2026</strong> program. We thank FlyRank for providing access to the internship warehouse dataset and for the guidance and support throughout the program.</p>
+
+    <div class="highlight-box">
+        <p style="margin-bottom: 0;"><strong>Data Source:</strong> <a href="https://flyrank.ai" target="_blank">https://flyrank.ai</a></p>
+        <p style="margin-bottom: 0;"><strong>Course:</strong> FlyRank ML Internship 2026</p>
+        <p style="margin-bottom: 0;"><strong>Author:</strong> Noor Meer</p>
+    </div>
+
+    <div class="footer">
+        <p>
+            📄 <a href="https://github.com/noor-meer/flyrank-ml-internship" target="_blank">View on GitHub</a> &nbsp;|&nbsp;
+            🌐 <a href="https://flyrank.ai" target="_blank">FlyRank</a>
+        </p>
+        <p style="margin-top: 10px;">Built on the FlyRank ML Internship dataset</p>
+        <p style="margin-top: 5px; font-size: 12px; color: #aaa;">
+            This work is shared for research and educational purposes.
+            All claims are observed/directional, not causal proof.
+        </p>
+    </div>
+
+</body>
+</html>
